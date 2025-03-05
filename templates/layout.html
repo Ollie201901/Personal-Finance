@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+  <title>Personal Finances</title>
+
+</head>
+<body>
+  <nav class="vertical-nav">
+    <div class="nav-header">
+      <h2>Personal Finances</h2>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="dashboard" class="nav-link">Dashboard</a>
+      </li>
+<!--      <li class="nav-item has-submenu">-->
+<!--        <a href="#accounts" class="nav-link">Accounts</a>-->
+<!--        <ul class="submenu">-->
+<!--          <li><a href="#checking" class="submenu-link">Checking</a></li>-->
+<!--          <li><a href="#savings" class="submenu-link">Savings</a></li>-->
+<!--          <li><a href="#credit" class="submenu-link">Credit Cards</a></li>-->
+<!--        </ul>-->
+<!--      </li>-->
+      <li class="nav-item nav-item has-submenu">
+        <a href="transactions" class="nav-link">Transactions</a>
+        <ul class="submenu">
+          <li><a href="transactions" class="submenu-link">Transactions</a></li>
+          <li><a href="scheduled_transactions" class="submenu-link">Scheduled Transactions</a></li>
+
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a href="budget" class="nav-link">Budget</a>
+      </li>
+<!--      <li class="nav-item has-submenu">-->
+<!--        <a href="#reports" class="nav-link">Reports</a>-->
+<!--        <ul class="submenu">-->
+<!--          <li><a href="#monthly" class="submenu-link">Monthly</a></li>-->
+<!--          <li><a href="#yearly" class="submenu-link">Yearly</a></li>-->
+<!--          <li><a href="#custom" class="submenu-link">Custom</a></li>-->
+<!--        </ul>-->
+<!--      </li>-->
+      <li class="nav-item nav-item has-submenu">
+        <a href="settings" class="nav-link">Settings</a>
+        <ul class="submenu">
+          <li><a href="auto_categorization" class="submenu-link">Auto Categorization</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    {% block body %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

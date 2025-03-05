@@ -1,0 +1,363 @@
+/* Basic reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Layout styling */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Vertical Navigation Styling */
+.vertical-nav {
+  width: 240px;
+  background: linear-gradient(180deg, #2c3e50, #34495e);
+  color: #ecf0f1;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.nav-header {
+  text-align: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(236, 240, 241, 0.3);
+}
+
+.nav-header h2 {
+  font-size: 1.5rem;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.nav-link:hover,
+.nav-item.active > .nav-link {
+  background-color: rgba(236, 240, 241, 0.2);
+}
+
+.has-submenu > .nav-link::after {
+  content: "\25B6"; /* right arrow */
+  float: right;
+  transition: transform 0.3s;
+}
+
+.nav-item.active > .nav-link::after {
+  transform: rotate(90deg);
+}
+
+.submenu {
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.submenu-link {
+  display: block;
+  padding: 0.5rem 2rem;
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.submenu-link:hover {
+  background-color: rgba(236, 240, 241, 0.1);
+}
+
+/* Main Content Area */
+.content {
+  flex: 1;
+  padding: 2rem;
+}
+/* Container for the filter menu */
+.filter-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+/* Labels for filter options */
+.filter-menu label {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+/* Select dropdowns and input fields */
+.filter-menu select,
+.filter-menu input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+/* Apply Filters button */
+#applyFilters {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for Apply Filters button */
+#applyFilters:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .filter-menu {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-menu label {
+    margin-bottom: 0.5rem;
+  }
+
+  #applyFilters {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Container for the filter menu */
+.filter-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Styling for each filter group */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels for the filters */
+.filter-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Inputs and selects within the filter menu */
+.filter-group input,
+.filter-group select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Apply Filters button */
+#applyFilters {
+  align-self: flex-end;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#applyFilters:hover {
+  background-color: #0056b3;
+}
+
+/* Container for action buttons */
+.actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Styling for Add Transaction and Import buttons */
+.actions button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actions button:hover {
+  background-color: #218838;
+}
+
+/* Specific styling for the Import button */
+#importButton {
+  background-color: #17a2b8;
+}
+
+#importButton:hover {
+  background-color: #117a8b;
+}
+/* Apply a border-collapse to eliminate double borders */
+#transactionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+/* Style table headers */
+#transactionsTable th {
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Style table data cells */
+#transactionsTable td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Add alternating row colors for better readability */
+#transactionsTable tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Highlight rows on hover */
+#transactionsTable tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Make the first column (Date) stand out */
+#transactionsTable td:first-child {
+  font-weight: bold;
+}
+
+/* Optional: Add a subtle box-shadow to the table */
+#transactionsTable {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+/* Budget Page Styles */
+.entry-form, .balance, .entries {
+  margin-bottom: 20px;
+}
+
+.entry-form label, .entry-form input, .entry-form select, .entry-form button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.entry-form input, .entry-form select {
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.entry-form button {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.entry-form button:hover {
+  background-color: #45a049;
+}
+
+.balance {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.entries table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.entries th, .entries td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.entries th {
+  background-color: #f2f2f2;
+}
+/* Scheduled Transactions Page Styles */
+.transaction-form, .transactions {
+  margin-bottom: 20px;
+}
+
+.transaction-form label, .transaction-form input, .transaction-form select, .transaction-form button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.transaction-form input, .transaction-form select {
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.transaction-form button {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.transaction-form button:hover {
+  background-color: #45a049;
+}
+
+.transactions table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions th, .transactions td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.transactions th {
+  background-color: #f2f2f2;
+}
