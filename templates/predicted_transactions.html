@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Predicted Transactions</h1>
+
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/predicted_transactions.js') }}"></script>
+{% endblock %}
