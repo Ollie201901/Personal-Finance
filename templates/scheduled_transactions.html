@@ -13,7 +13,14 @@
       <label for="amount">Amount:</label>
       <input type="number" id="amount" step="0.01" required>
 
-      <label for="transaction_type">Type:</label>
+      <label for="transaction_source">Source</label>
+      <select id="transaction_source" required>
+        {% for transaction in transaction_source %}
+        <option value="{{ transaction.path }}">{{ transaction.path }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="transaction_type">Transaction Type:</label>
       <select id="transaction_type" required>
         <option value="Income">Income</option>
         <option value="Expense">Expense</option>

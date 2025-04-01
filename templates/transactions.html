@@ -3,66 +3,12 @@
 {% block body %}
   <h1>Transactions</h1>
 
-  <!-- Filter Menu -->
-<!--  <div class="filter-menu">-->
-<!--    <label for="filter-year">Year:</label>-->
-<!--    <select id="filter-year">-->
-<!--      <option value="">All</option>-->
-<!--      <option value="2023">2023</option>-->
-<!--      <option value="2024">2024</option>-->
-<!--      <option value="2025">2025</option>-->
-<!--    </select>-->
-
-<!--    <label for="filter-month">Month:</label>-->
-<!--    <select id="filter-month">-->
-<!--      <option value="">All</option>-->
-<!--      <option value="01">January</option>-->
-<!--      <option value="02">February</option>-->
-<!--      <option value="03">March</option>-->
-<!--      <option value="04">April</option>-->
-<!--      <option value="05">May</option>-->
-<!--      <option value="06">June</option>-->
-<!--      <option value="07">July</option>-->
-<!--      <option value="08">August</option>-->
-<!--      <option value="09">September</option>-->
-<!--      <option value="10">October</option>-->
-<!--      <option value="11">November</option>-->
-<!--      <option value="12">December</option>-->
-<!--    </select>-->
-
-<!--    <label for="filter-date">Date:</label>-->
-<!--    <input type="date" id="filter-date">-->
-
-<!--    <label for="filter-description">Description:</label>-->
-<!--    <input type="text" id="filter-description" placeholder="Search by description...">-->
-
-<!--    <label for="filter-type">Transaction Type:</label>-->
-<!--    <select id="filter-type">-->
-<!--      <option value="">All</option>-->
-<!--      <option value="Income">Debit</option>-->
-<!--      <option value="Expenses">Credit</option>-->
-<!--    </select>-->
-
-<!--    <label for="filter-category">Category:</label>-->
-<!--    <select id="filter-category">-->
-<!--      <option value="">All</option>-->
-<!--      <option value="Food">Food</option>-->
-<!--      <option value="Bills">Bills</option>-->
-<!--      <option value="Salary">Salary</option>-->
-<!--      <option value="Entertainment">Entertainment</option>-->
-<!--    </select>-->
-
-<!--    <label for="filter-tag">Tag:</label>-->
-<!--    <input type="text" id="filter-tag" placeholder="Search by tag...">-->
-
-<!--    <button id="applyFilters">Apply Filters</button>-->
-<!--  </div>-->
-
   <!-- Actions -->
-  <form id="importForm" action="{{ url_for('bulk_import') }}" method="POST" enctype="multipart/form-data">
-  <input type="file" name="file" id="importFileInput" accept=".csv, .xlsx">
-  <button type="submit">Import</button>
-</form>
+    <div class="transaction-form">
+        <form id="importForm" action="{{ url_for('bulk_import') }}" method="POST" enctype="multipart/form-data">
+            <button type="submit">Import</button>
+        </form>
+    </div>
 
   <!-- Transactions Table -->
   <table id="transactionsTable">
@@ -82,9 +28,10 @@
                 <td contenteditable="true" data-field="date">{{ transaction['date'] }}</td>
                 <td contenteditable="true" data-field="description">{{ transaction['description'] }}</td>
                 <td contenteditable="true" data-field="amount">{{ transaction['amount'] }}</td>
+                <td contenteditable="true" data-field="source">{{ transaction['source'] }}</td>
                 <td contenteditable="true" data-field="transaction_type">{{ transaction['transaction_type'] }}</td>
                 <td contenteditable="true" data-field="category">{{ transaction['category'] }}</td>
-                <td contenteditable="true" data-field="tag">{{ transaction['tag'] }}</td>
+<!--                <td contenteditable="true" data-field="tag">{{ transaction['tag'] }}</td>-->
                 <td><button class="delete-btn">Delete</button></td>
             </tr>
         {% endfor %}

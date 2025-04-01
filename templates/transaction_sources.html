@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Transaction Source Files</h1>
+
+<div class="transaction-form">
+<!--    <h2>Add Transaction Source</h2>-->
+    <form id="transactionSettingsForm" action = "{{ url_for('transaction_sources_add') }}" method="POST">
+      <label for="folder_path">Folder Address:</label>
+      <input type="text" id="folder_path" name="folder_path" placeholder="C:\" required>
+
+      <label for="file_identifier">File Identifier:</label>
+      <input type="text" id="file_identifier" name="file_identifier" placeholder = "visa" required>
+
+      <label for="account_alias">Account Alias:</label>
+      <input type="text" id="account_alias" name="account_alias" placeholder = "Scotiabank Visa" required>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+<!-- Transactions Table -->
+  <div class="transactions">
+    <h2>Transaction Sources</h2>
+    <table id="transactionSettingsTable">
+      <thead>
+        <tr>
+          <th>Folder Address</th>
+          <th>File Identifier</th>
+          <th>Account Alias</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for source in transaction_source %}
+            <tr data-id = "{{ source['id'] }}">
+                <td contenteditable="true" data-field="folder_path">{{ source["folder_path"] }}</td>
+                <td contenteditable="true" data-field="file_identifier">{{ source["file_identifier"] }}</td>
+                <td contenteditable="true" data-field="account_alias">{{ source["account_alias"] }}</td>
+                <td><button class="delete-btn" onclick="deleteTransactionSource({{ source['id'] }})">Delete</button></td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/transaction_sources.js') }}"></script>
+{% endblock %}
