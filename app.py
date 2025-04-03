@@ -11,7 +11,8 @@ def index():
 
 @app.route("/transactions", methods = ["GET", "POST"])
 def transactions():
-    transactions = db.Transaction().get_all()
+    with db.Transaction() as t:
+        transactions = t.get_all()
     return render_template("transactions.html",transactions = transactions)
 @app.route('/bulk_import', methods=["GET", "POST"])
 def bulk_import():
@@ -60,9 +61,6 @@ def scheduled_transactions():
 def predicted_transactions():
     return render_template("predicted_transactions.html")
 
-@app.route("/auto_categorization", methods = ["GET", "POST"])
-def auto_categorization():
-    return render_template("auto_categorization.html")
 
 @app.route("/transaction_sources", methods = ["GET", "POST"])
 def transaction_sources():
@@ -79,6 +77,14 @@ def transaction_sources_add():
         t.add(folder_path=folder_path, file_identifier=file_identifier, account_alias=account_alias)
     return redirect("/transaction_sources")
 
+@app.route("/categories_add", methods = ["GET", "POST"])
+def categories_add():
+    category = request.form.get("category")
+    transaction_type = request.form.get("transaction_type")
+    with db.Category() as c:
+        c.add(category_name=category, transaction_type=transaction_type)
+    return redirect("/categories")
+
 @app.route('/transaction_sources/<int:transaction_source_id>/delete', methods=['POST'])
 def delete_transaction_source(transaction_source_id):
     try:
@@ -88,10 +94,62 @@ def delete_transaction_source(transaction_source_id):
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
 
+
 @app.route("/budget", methods = ["GET", "POST"])
 def budget():
-    return render_template("budget.html", categories = [])
+    with db.Budget() as b:
+        budgets = b.get_all()
+    with db.Category() as c:
+        categories = c.get_all()
+    return render_template("budget.html", budgets = budgets, categories= categories)
 
+@app.route("/budget_add", methods = ["GET", "POST"])
+def budget_add():
+    category = request.form.get("category")
+    threshold_amount = request.form.get("threshold_amount")
+    period = request.form.get("frequency")
+    match period.lower():
+        case "weekly":
+            period_days = 7
+        case "bi-weekly":
+            period_days = 14
+        case "monthly":
+            period_days = 31
+        case "bi-monthly":
+            period_days = 62
+        case "6-months":
+            period_days = 26*7
+        case "yearly":
+            period_days = 365
+        case _:
+            period_days = 1
+    with db.Budget() as b:
+        b.add(category=category,threshold_per_period=threshold_amount,period_days=period_days)
+    return redirect("/budget")
+
+@app.route('/budget/<int:budget_id>/delete', methods=['POST'])
+def delete_budget(budget_id):
+    try:
+        with db.Budget() as b:
+            b.delete(budget_id)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    else: return jsonify({'success': True})
+
+@app.route("/categories", methods = ["GET", "POST"])
+def categories():
+    with db.Category() as c:
+        categories = c.get_all()
+    return render_template("categories.html", categories = categories)
+
+@app.route('/category/<int:category_id>/delete', methods=['POST'])
+def delete_category(category_id):
+    try:
+        with db.Category() as c:
+            c.delete(category_id)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    else: return jsonify({'success': True})
 
 if __name__ == "__main__":
     db.Database().create()

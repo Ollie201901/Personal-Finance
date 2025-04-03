@@ -7,7 +7,8 @@ import database as db
 import os
 
 def bulk_import():
-    sources = db.TransactionSource().get_all()
+    with db.TransactionSource() as t:
+        sources = t.get_all()
     for source in sources:
         for root, dirs, files in os.walk(source["folder_path"]):
             for file in files:
@@ -22,23 +23,33 @@ def bulk_import():
                     new = []
                     for transaction in transactions_lst:
                         trans = {}
-                        trans["date"] = datetime.strptime(new_transaction["Date"], '%Y-%m-%d').date()
-                        trans["description"] = new_transaction["Description"] + " " + transaction["Sub-description"]
-                        trans["amount"] = abs(float(new_transaction["Amount"]))
+                        trans["date"] = datetime.strptime(transaction["Date"], '%Y-%m-%d').date()
+                        trans["description"] = transaction["Description"] + " " + transaction["Sub-description"]
+                        trans["amount"] = abs(float(transaction["Amount"]))
                         trans["source"] = source["file_identifier"]
                         new.append(trans)
                     old = db.Transaction().get_all()
+                    new = transform(new)
+                    old = transform(old)
                     difference = compare(new,old)
+                    for trans, num in difference.items():
+                        with db.Transaction() as t:
+                            t.add(date=trans["date"],description=trans["description"],amount=trans["amount"],
+                                             source=trans["source"])#,transaction_type=,category=)
 
 
+def transform(file):
+    result = {}
+    for row in file:
+        result[row] = result.get(row, 0) + 1
+    return result
 
-
-def compare(new_transaction, old_transaction):
-    result =
-    for transaction in new_transaction:
-        if transaction in old_transaction:
-            if new_transaction[transaction] > old_transaction[transaction]:
-                result[transaction] = old_transaction[transaction] - new_transaction[transaction]
+def compare(new, old):
+    result = {}
+    for trans in new:
+        if trans in old:
+            if new[trans] > old[trans]:
+                result[trans] = old[trans] - new[trans]
         else:
-            result[transaction] = 1
+            result[trans] = 1
     return result

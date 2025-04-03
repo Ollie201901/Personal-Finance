@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Categories</h1>
+
+  <!-- Add Entry Form -->
+  <div class="entry-form">
+<!--    <h2>Add Entry</h2>-->
+    <form id="entryForm" action = "{{ url_for('categories_add') }}" method="POST">
+      <label for="entry-name">Name:</label>
+      <input type="text" id="entry-name" name="category" required>
+
+<!--      <label for="entry-date">Date:</label>-->
+<!--      <input type="date" id="entry-date" required>-->
+
+      <label for="transaction_type">Transaction Type:</label>
+      <select id="transaction_type" name="transaction_type" required>
+        <option  disabled selected value> -- select an option --</option>
+        <option id = "transaction_type1" value="Income">Income</option>
+        <option id = "transaction_type2" value="Expense">Expense</option>
+        <option id = "transaction_type3" value="Savings">Savings</option>
+      </select>
+
+      <button type="submit">Add Category</button>
+    </form>
+  </div>
+
+  <!-- Current Balance -->
+<!--  <div class="balance">-->
+<!--    <h2>Current Balance: $<span id="currentBalance">0.00</span></h2>-->
+<!--  </div>-->
+
+  <!-- Entries Table -->
+  <div class="entries">
+    <h2>Current Categories</h2>
+    <table id="entriesTable">
+      <thead>
+        <tr>
+          <th>Category Name</th>
+          <th>Transaction Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+            <tr data-id = "{{ category['id'] }}">
+                <td contenteditable="true" data-field="category_name">{{ category['category'] }}</td>
+                <td contenteditable="true" data-field="transaction_type">{{ category['transaction_type'] }}</td>
+                <td><button class="delete-btn" onclick="deleteCategory({{ category['id'] }})">Delete</button></td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+{% endblock %}

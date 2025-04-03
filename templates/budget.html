@@ -5,24 +5,32 @@
 
   <!-- Add Entry Form -->
   <div class="entry-form">
-    <h2>Add Entry</h2>
-    <form id="entryForm">
-      <label for="entry-description">Description:</label>
-      <input type="text" id="entry-description" required>
-
+<!--    <h2>Add Entry</h2>-->
+    <form id="entryForm" action = "{{ url_for('budget_add') }}" method="POST">
 <!--      <label for="entry-date">Date:</label>-->
 <!--      <input type="date" id="entry-date" required>-->
 
       <label for="entry-category">Category:</label>
-      <select id="entry-category" required>
+      <select id="entry-category" name = "category" required>
+        <option  disabled selected value> -- select an option --</option>
         {% for category in categories %}
-        <option id = "{{ category['id'] }}" value="{{ category['name'] }}">{{ category['name'] }}</option>
+        <option id = "{{ category['id'] }}" value="{{ category['category'] }}">{{ category['transaction_type'] }}: {{ category['category'] }}</option>
         {% endfor %}
       </select>
 
+      <label for="entry-amount">Threshold Amount:</label>
+      <input type="number" id="entry-amount" name = "threshold_amount" step="0.01" required>
 
-      <label for="entry-amount">Amount:</label>
-      <input type="number" id="entry-amount" step="0.01" required>
+      <label for="entry-freq">Period:</label>
+      <select id="entry-freq" name = "frequency"required>
+        <option  disabled selected value> -- select an option --</option>
+        <option id = "freq1" value="Weekly">Weekly</option>
+        <option id = "freq2" value="Bi-Weekly">Bi-Weekly</option>
+        <option id = "freq3" value="Monthly">Monthly</option>
+        <option id = "freq4" value="Bi-Monthly">Bi-Monthly</option>
+        <option id = "freq5" value="6-Months">6-Months</option>
+        <option id = "freq6" value="Yearly">Yearly</option>
+      </select>
 
       <button type="submit">Add Budget Item</button>
     </form>
@@ -39,16 +47,25 @@
     <table id="entriesTable">
       <thead>
         <tr>
-          <th>Description</th>
           <th>Category</th>
-          <th>Amount</th>
-          <th>Frequency</th>
+          <th>Threshold Amount</th>
+          <th>Period [Days]</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Entries will be populated here -->
+        {% for budget in budgets %}
+            <tr data-id = "{{ budget['id'] }}">
+                <td contenteditable="true" data-field="category">{{ budget['transaction_type'] }}: {{ budget['category'] }}</td>
+                <td contenteditable="true" data-field="threshold_amount">{{ budget['threshold_per_period'] }}</td>
+                <td contenteditable="true" data-field="period">{{ budget['period_days'] }}</td>
+                <td><button class="delete-btn" onclick="deleteBudgetItem({{ budget['id'] }})">Delete</button></td>
+            </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('static', filename='js/budget.js') }}"></script>
 {% endblock %}

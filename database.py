@@ -19,8 +19,10 @@ class Database:
                 CREATE TABLE IF NOT EXISTS "categories" (
                     "id"	INTEGER NOT NULL UNIQUE,
                     "category"  INTEGER NOT NULL UNIQUE,
+                    "transaction_type" TEXT NOT NULL,
                     "create_date"	TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    "delete_date"	TEXT
+                    "delete_date"	TEXT,
+                    PRIMARY KEY("id" AUTOINCREMENT)
                 );
             """
             self.cursor.execute(sql)
@@ -44,7 +46,6 @@ class Database:
                     "description"	TEXT NOT NULL,
                     "amount"	REAL NOT NULL,
                     "source"	TEXT NOT NULL,
-                    "transaction_type"	TEXT NOT NULL,
                     "category_id"	INTEGER NOT NULL,
                     "create_date"	TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     "delete_date"	TEXT,
@@ -72,18 +73,20 @@ class Category(Database):
     def __init__(self):
         super().__init__()
 
-    def add(self,category_name):
+    def add(self,category_name,transaction_type):
         try:
             sql = """
-                INSERT INTO categories (category)
-                VALUES(?)
+                INSERT INTO categories (category, transaction_type)
+                VALUES(?,?)
             """
-            self.cursor.execute(sql, (category_name,))
+            self.cursor.execute(sql, (category_name,transaction_type))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
 
     def delete(self, id):
         try:
@@ -95,14 +98,16 @@ class Category(Database):
             self.cursor.execute(sql,(datetime.now(), id))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
 
     def get_all(self):
         try:
             sql = """
-                SELECT id, category
+                SELECT id, category, transaction_type
                 FROM categories
                 WHERE delete_date is null
             """
@@ -113,9 +118,11 @@ class Category(Database):
                 r = {}
                 r["id"] = row[0]
                 r["category"] = row[1]
+                r["transaction_type"] = row[2]
                 result.append(r)
             return result
         except Exception as e:
+            self.conn.close()
             raise e
 
     def get_id(self,category_name):
@@ -129,18 +136,20 @@ class Category(Database):
             result = self.cursor.fetchone()
             return result[0]
         except Exception as e:
+            self.conn.close()
             raise e
     def get_category_by_id(self,id):
         try:
             sql = """
-                        SELECT category
+                        SELECT category, transaction_type
                         FROM categories
                         WHERE delete_date is null and id = ?
                     """
             self.cursor.execute(sql, (id,))
             result = self.cursor.fetchone()
-            return result[0]
+            return result
         except Exception as e:
+            self.conn.close()
             raise e
 
 class Budget(Database):
@@ -157,9 +166,11 @@ class Budget(Database):
             self.cursor.execute(sql, (category_id, threshold_per_period, period_days))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
     def get_all(self):
         try:
             sql = """
@@ -173,12 +184,16 @@ class Budget(Database):
             for row in rows:
                 r = {}
                 r["id"] = row[0]
-                r["category"] = Category().get_category_by_id(id=row[1])
+                with Category() as c:
+                    category, transaction_type = c.get_category_by_id(id=row[1])
+                r["category"] = category
+                r["transaction_type"] = transaction_type
                 r["threshold_per_period"] = row[2]
                 r["period_days"] = row[3]
                 result.append(r)
             return result
         except Exception as e:
+            self.conn.close()
             raise e
 
     def delete(self, id):
@@ -191,9 +206,11 @@ class Budget(Database):
             self.cursor.execute(sql,(datetime.now(), id))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
 class TransactionSource(Database):
     def __init__(self):
         super().__init__()
@@ -207,9 +224,11 @@ class TransactionSource(Database):
             self.cursor.execute(sql, (folder_path, file_identifier, account_alias))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
     def delete(self,id):
         try:
             sql = """
@@ -220,9 +239,11 @@ class TransactionSource(Database):
             self.cursor.execute(sql,(datetime.now(), id))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
 
     def get_all(self):
         try:
@@ -243,29 +264,33 @@ class TransactionSource(Database):
                 result.append(r)
             return result
         except Exception as e:
+            self.conn.close()
             raise e
 
 class Transaction(Database):
     def __init__(self):
         super().__init__()
 
-    def add(self, date, description, amount, source, transaction_type=None, category=None):
+    def add(self, date, description, amount, source, category=None):
         try:
             sql = """
-                INSERT INTO transactions (date, description, amount, source, transaction_type, category_id)
-                VALUES(?, ?, ?, ?, ?, ?)
+                INSERT INTO transactions (date, description, amount, source, category_id)
+                VALUES(?, ?, ?, ?, ?)
             """
-            category_id = Category().get_id(category)
-            self.cursor.execute(sql, (date, description, amount, source, transaction_type, category_id))
+            with Category() as c:
+                category_id = c.get_id(category)
+            self.cursor.execute(sql, (date, description, amount, source, category_id))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
     def get_all(self):
             try:
                 sql = """
-                    SELECT id, date, description, amount, source, transaction_type, category_id
+                    SELECT id, date, description, amount, source, category_id
                     FROM transactions
                     WHERE delete_date is null
                 """
@@ -279,11 +304,14 @@ class Transaction(Database):
                     r["description"] = row[2]
                     r["amount"] = row[3]
                     r["source"] = row[4]
-                    r["transaction_type"] = row[5]
-                    r["category"] = Category().get_category_by_id(id=row[3])
+                    with Category() as c:
+                        category, transaction_type = c.get_category_by_id(id=row[5])
+                    r["category"] = category
+                    r["transaction_type"] = transaction_type
                     result.append(r)
                 return result
             except Exception as e:
+                self.conn.close()
                 raise e
 
     def delete_transaction(self):
@@ -296,7 +324,9 @@ class Transaction(Database):
             self.cursor.execute(sql,(datetime.now(), id))
         except Exception as e:
             self.conn.rollback()
+            self.conn.close()
             raise e
         else:
             self.conn.commit()
+            self.conn.close()
 
