@@ -35,12 +35,14 @@ def bulk_import():
                     for trans, num in difference.items():
                         with db.Transaction() as t:
                             t.add(date=trans["date"],description=trans["description"],amount=trans["amount"],
-                                             source=trans["source"])#,transaction_type=,category=)
+                                             source=trans["source"])#,transaction_type=,category=, vendor =)
 
 
 def transform(file):
     result = {}
+
     for row in file:
+
         result[row] = result.get(row, 0) + 1
     return result
 

@@ -151,6 +151,62 @@ def delete_category(category_id):
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
 
+@app.route("/auto_categorization", methods = ["GET", "POST"])
+def auto_categorization():
+    with db.Category() as c:
+        categories = c.get_all()
+    with db.TransactionSource() as t:
+        sources = t.get_all()
+    with db.Vendor() as v:
+        vendors = v.get_all()
+    with db.AutoAssignment() as a:
+        auto_categorization = a.get_all()
+    return render_template("auto_categorization.html", categories = categories,
+                           sources = sources, vendors = vendors, auto_categorization=auto_categorization)
+
+@app.route("/auto_categorization_add", methods = ["GET", "POST"])
+def auto_categorization_add():
+    description = request.form.get("description")
+    min_amount = request.form.get("min_amount")
+    max_amount = request.form.get("max_amount")
+    transaction_source = request.form.get("source")
+    category = request.form.get("category")
+    vendor = request.form.get("vendor")
+    with db.AutoAssignment() as a:
+        a.add(description=description,min_amount=min_amount,max_amount=max_amount,transaction_source=transaction_source,
+              category=category,vendor=vendor)
+    return redirect("/auto_categorization")
+
+@app.route('/auto_categorization/<int:auto_categorization_id>/delete', methods=['POST'])
+def delete_auto_categorization(auto_categorization_id):
+    try:
+        with db.AutoAssignment() as a:
+            a.delete(auto_categorization_id)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    else: return jsonify({'success': True})
+@app.route("/vendors", methods = ["GET", "POST"])
+def vendor():
+    with db.Vendor() as v:
+        vendors = v.get_all()
+    return render_template("vendors.html",vendors = vendors)
+
+@app.route("/vendor_add", methods = ["GET", "POST"])
+def vendor_add():
+    vendor = request.form.get("vendor")
+    with db.Vendor() as v:
+        v.add(vendor_name=vendor)
+    return redirect("/vendors")
+
+@app.route('/vendor/<int:vendor_id>/delete', methods=['POST'])
+def delete_vendor(vendor_id):
+    try:
+        with db.Vendor() as v:
+            v.delete(vendor_id)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    else: return jsonify({'success': True})
+
 if __name__ == "__main__":
     db.Database().create()
     app.run(host = "127.0.0.1", port = 2000, debug = True)

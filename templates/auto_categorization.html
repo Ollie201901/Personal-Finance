@@ -1,8 +1,88 @@
 {% extends "layout.html" %}
 
 {% block body %}
-  <main class="content">
-    <h1>Incomplete Section</h1>
-    <p>This section is incomplete. Please visit again soon.</p>
-  </main>
+  <h1>Automatic Assignment</h1>
+
+  <!-- Add Entry Form -->
+  <div class="entry-form">
+<!--    <h2>Add Entry</h2>-->
+    <form id="entryForm" action = "{{ url_for('auto_categorization_add') }}" method="POST">
+<!--      <label for="entry-date">Date:</label>-->
+<!--      <input type="date" id="entry-date" required>-->
+
+      <label for="entry-desc">Description [Wildcard: %]</label>
+      <input type="text" id="entry-desc" name = "description" required>
+
+      <label for="min-amount">Minimum Amount:</label>
+      <input type="number" id="min-amount" name = "min_amount" step="0.01" min="0">
+
+      <label for="max-amount">Maximum Amount:</label>
+      <input type="number" id="max-amount" name = "max_amount" step="0.01">
+
+      <label for="source">Transaction Source:</label>
+      <select id="source" name = "source" required>
+        <option  disabled selected value> -- select an option --</option>
+        {% for source in sources %}
+        <option value="{{ source['account_alias'] }}">{{ source['account_alias'] }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="cat">Category Assignment:</label>
+      <select id="cat" name = "category" required>
+        <option  disabled selected value> -- select an option --</option>
+        {% for category in categories %}
+        <option value="{{ category['category'] }}">{{ category['transaction_type'] }}: {{ category['category'] }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="vendor">Vendor Assignment:</label>
+      <select id="vendor" name = "vendor" required>
+        <option  disabled selected value> -- select an option --</option>
+        {% for vendor in vendors %}
+        <option value="{{ vendor['vendor'] }}">{{ vendor['vendor'] }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit">Add Item</button>
+    </form>
+  </div>
+
+  <!-- Current Balance -->
+<!--  <div class="balance">-->
+<!--    <h2>Current Balance: $<span id="currentBalance">0.00</span></h2>-->
+<!--  </div>-->
+
+  <!-- Entries Table -->
+  <div class="entries">
+    <h2>Current Automatic Assignments</h2>
+    <table id="entriesTable">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Minimum Amount</th>
+          <th>Maximum Amount</th>
+          <th>Transaction Source</th>
+          <th>Category Assignment</th>
+          <th>Vendor Assignment</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for auto in auto_categorization %}
+            <tr data-id = "{{ auto['id'] }}">
+                <td contenteditable="true" data-field="description">{{ auto['description'] }}</td>
+                <td contenteditable="true" data-field="min_amount">{{ auto['min_amount'] }}</td>
+                <td contenteditable="true" data-field="max_amount">{{ auto['max_amount'] }}</td>
+                <td contenteditable="true" data-field="transaction_source">{{ auto['transaction_source'] }}</td>
+                <td contenteditable="true" data-field="category">{{ auto['category'] }}</td>
+                <td contenteditable="true" data-field="vendor">{{ auto['vendor'] }}</td>
+                <td><button class="delete-btn" onclick="deleteAutoAssign({{ auto['id'] }})">Delete</button></td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('static', filename='js/auto_categorization.js') }}"></script>
 {% endblock %}

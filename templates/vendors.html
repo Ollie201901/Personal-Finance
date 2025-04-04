@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block body %}
+  <h1>Vendors</h1>
+
+  <!-- Add Entry Form -->
+  <div class="entry-form">
+<!--    <h2>Add Entry</h2>-->
+    <form id="entryForm" action = "{{ url_for('vendor_add') }}" method="POST">
+      <label for="vendor">Name:</label>
+      <input type="text" id="vendor" name="vendor" required>
+
+      <button type="submit">Add Vendor</button>
+    </form>
+  </div>
+
+  <!-- Entries Table -->
+  <div class="entries">
+    <h2>Current Vendors</h2>
+    <table id="entriesTable">
+      <thead>
+        <tr>
+          <th>Vendor Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vendor in vendors %}
+            <tr data-id = "{{ vendor['id'] }}">
+                <td contenteditable="true" data-field="vendor_name">{{ vendor['vendor'] }}</td>
+                <td><button class="delete-btn" onclick="deleteVendor({{ vendor['id'] }})">Delete</button></td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/vendors.js') }}"></script>
+{% endblock %}
