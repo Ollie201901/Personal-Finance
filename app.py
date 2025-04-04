@@ -1,17 +1,25 @@
 from flask import Flask, render_template, request, redirect, jsonify
-import database as db
-
+from datetime import datetime
+from db import Database
+from Category import Category
+from Vendor import Vendor
+from Budget import Budget
+from TransactionSource import TransactionSource
+from Transaction import Transaction
+from AutoAssignment import AutoAssignment
 import utils
 
 app = Flask(__name__)
 # Defining Routes
+
+# ############################################# TRANSACTIONS #############################################
 @app.route("/", methods = ["GET", "POST"])
 def index():
     return redirect("/transactions")
 
 @app.route("/transactions", methods = ["GET", "POST"])
 def transactions():
-    with db.Transaction() as t:
+    with Transaction() as t:
         transactions = t.get_all()
     return render_template("transactions.html",transactions = transactions)
 @app.route('/bulk_import', methods=["GET", "POST"])
@@ -52,19 +60,22 @@ def bulk_import():
     # except Exception as e:
     #     return jsonify({'success': False, 'error': str(e)}), 500
 
-
+# ############################################# SCHEDULED TRANSACTIONS #############################################
 @app.route("/scheduled_transactions", methods = ["GET", "POST"])
 def scheduled_transactions():
     return render_template("scheduled_transactions.html",transaction_source = [])
+
+# ############################################# PREDICTED TRANSACTIONS #############################################
 
 @app.route("/predicted_transactions", methods = ["GET", "POST"])
 def predicted_transactions():
     return render_template("predicted_transactions.html")
 
+# ############################################# TRANSACTION SOURCES #############################################
 
 @app.route("/transaction_sources", methods = ["GET", "POST"])
 def transaction_sources():
-    with db.TransactionSource() as t:
+    with TransactionSource() as t:
         transaction_source = t.get_all()
     return render_template("transaction_sources.html", transaction_source = transaction_source)
 
@@ -73,9 +84,19 @@ def transaction_sources_add():
     folder_path = request.form.get("folder_path")
     file_identifier = request.form.get("file_identifier")
     account_alias = request.form.get("account_alias")
-    with db.TransactionSource() as t:
+    with TransactionSource() as t:
         t.add(folder_path=folder_path, file_identifier=file_identifier, account_alias=account_alias)
     return redirect("/transaction_sources")
+
+@app.route('/transaction_sources/<int:transaction_source_id>/delete', methods=['POST'])
+def delete_transaction_source(transaction_source_id):
+    try:
+        with TransactionSource() as t:
+            t.delete(transaction_source_id)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    else: return jsonify({'success': True})
+# ############################################# CATEGORIES #############################################
 
 @app.route("/categories_add", methods = ["GET", "POST"])
 def categories_add():
@@ -85,21 +106,26 @@ def categories_add():
         c.add(category_name=category, transaction_type=transaction_type)
     return redirect("/categories")
 
-@app.route('/transaction_sources/<int:transaction_source_id>/delete', methods=['POST'])
-def delete_transaction_source(transaction_source_id):
+@app.route("/categories", methods = ["GET", "POST"])
+def categories():
+    with Category() as c:
+        categories = c.get_all()
+    return render_template("categories.html", categories = categories)
+
+@app.route('/category/<int:category_id>/delete', methods=['POST'])
+def delete_category(category_id):
     try:
-        with db.TransactionSource() as t:
-            t.delete(transaction_source_id)
+        with Category() as c:
+            c.delete(category_id)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
-
-
+# ############################################# BUDGET #############################################
 @app.route("/budget", methods = ["GET", "POST"])
 def budget():
-    with db.Budget() as b:
+    with Budget() as b:
         budgets = b.get_all()
-    with db.Category() as c:
+    with Category() as c:
         categories = c.get_all()
     return render_template("budget.html", budgets = budgets, categories= categories)
 
@@ -123,43 +149,30 @@ def budget_add():
             period_days = 365
         case _:
             period_days = 1
-    with db.Budget() as b:
+    with Budget() as b:
         b.add(category=category,threshold_per_period=threshold_amount,period_days=period_days)
     return redirect("/budget")
 
 @app.route('/budget/<int:budget_id>/delete', methods=['POST'])
 def delete_budget(budget_id):
     try:
-        with db.Budget() as b:
+        with Budget() as b:
             b.delete(budget_id)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
 
-@app.route("/categories", methods = ["GET", "POST"])
-def categories():
-    with db.Category() as c:
-        categories = c.get_all()
-    return render_template("categories.html", categories = categories)
 
-@app.route('/category/<int:category_id>/delete', methods=['POST'])
-def delete_category(category_id):
-    try:
-        with db.Category() as c:
-            c.delete(category_id)
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-    else: return jsonify({'success': True})
-
+# ############################################# AUTO-CATEGORIZATION #############################################
 @app.route("/auto_categorization", methods = ["GET", "POST"])
 def auto_categorization():
-    with db.Category() as c:
+    with Category() as c:
         categories = c.get_all()
-    with db.TransactionSource() as t:
+    with TransactionSource() as t:
         sources = t.get_all()
-    with db.Vendor() as v:
+    with Vendor() as v:
         vendors = v.get_all()
-    with db.AutoAssignment() as a:
+    with AutoAssignment() as a:
         auto_categorization = a.get_all()
     return render_template("auto_categorization.html", categories = categories,
                            sources = sources, vendors = vendors, auto_categorization=auto_categorization)
@@ -172,7 +185,7 @@ def auto_categorization_add():
     transaction_source = request.form.get("source")
     category = request.form.get("category")
     vendor = request.form.get("vendor")
-    with db.AutoAssignment() as a:
+    with AutoAssignment() as a:
         a.add(description=description,min_amount=min_amount,max_amount=max_amount,transaction_source=transaction_source,
               category=category,vendor=vendor)
     return redirect("/auto_categorization")
@@ -180,33 +193,35 @@ def auto_categorization_add():
 @app.route('/auto_categorization/<int:auto_categorization_id>/delete', methods=['POST'])
 def delete_auto_categorization(auto_categorization_id):
     try:
-        with db.AutoAssignment() as a:
+        with AutoAssignment() as a:
             a.delete(auto_categorization_id)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
+
+# ############################################# VENDOR #############################################
 @app.route("/vendors", methods = ["GET", "POST"])
 def vendor():
-    with db.Vendor() as v:
+    with Vendor() as v:
         vendors = v.get_all()
     return render_template("vendors.html",vendors = vendors)
 
 @app.route("/vendor_add", methods = ["GET", "POST"])
 def vendor_add():
     vendor = request.form.get("vendor")
-    with db.Vendor() as v:
+    with Vendor() as v:
         v.add(vendor_name=vendor)
     return redirect("/vendors")
 
 @app.route('/vendor/<int:vendor_id>/delete', methods=['POST'])
 def delete_vendor(vendor_id):
     try:
-        with db.Vendor() as v:
+        with Vendor() as v:
             v.delete(vendor_id)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
 
 if __name__ == "__main__":
-    db.Database().create()
+    Database().create()
     app.run(host = "127.0.0.1", port = 2000, debug = True)
