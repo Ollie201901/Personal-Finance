@@ -8,7 +8,7 @@ import os
 
 
 class Tran:
-    def __init__(self,date,description,amount,source):
+    def __init__(self,date=None,description=None,amount=0,source=None):
         self.date = date
         self.description = description
         self.amount = amount
@@ -17,6 +17,9 @@ class Tran:
     def __eq__(self, other):
         return (isinstance(other,Tran) and self.date == other.date and self.description == other.description and
                 self.amount == other.amount and self.source == other.source)
+
+    def __hash__(self):
+        return hash(str(self.date)+self.description+str(self.amount)+self.source)
 
     @property
     def date(self):
@@ -57,36 +60,46 @@ class Tran:
         self._source = val
 
 
-class Transactions:
+class Transactions():
     def __init__(self):
         self.trans = {}
-
-    def __iter__(self):
-        return self.trans.keys()
 
     def add(self,date,description,amount,source):
         t = Tran(date=date,description=description,amount=amount,source=source)
         self.trans[t] = self.trans.get(t, 0) + 1
 
+    def keys(self):
+        return self.trans.keys()
+    def values(self):
+        return self.trans.values()
+
+    def items(self):
+        return self.trans.items()
+    def get_value(self,key):
+        if key not in self.trans.keys():
+            raise KeyError
+        else:
+            return self.trans[key]
+
     def _lst_of_dict_add(self, transactions_lst, f_id = None):
         for t in transactions_lst:
             if f_id is None:
-                self.add(date=t["date"], description=t["description"],
+                self.add(date=t["date"], description=t["description"].stri(),
                          amount=float(t["amount"]), source=t["source"])
             else:
-                self.add(date=t["Date"],description=t["Description"] + " " + t["Sub-description"],amount=float(t["Amount"]),source=f_id)
+                try:
+                    self.add(date=t["date"],description=(str(t["description"]).strip() + " " + str(t["sub-description"]).strip()).strip(),
+                         amount=float(t["amount"]),source=f_id)
+                except:
+                    self.add(date=t["Date"], description=(str(t["Description"]).strip() + " " + str(t["Sub-description"]).strip()).strip(),
+                             amount=float(t["Amount"]), source=f_id)
     def add_csv(self, file,f_id):
         with open(file, mode='r', encoding='utf-8') as f:
             csv_reader = csv.DictReader(f)
             transactions_lst = list(csv_reader)
         self._lst_of_dict_add(transactions_lst,f_id)
 
-    def add_excel(self, file, f_id):
-        df = pd.read_excel(file)
-        transactions_lst = df.to_dict(orient='records')
-        self._lst_of_dict_add(transactions_lst,f_id)
-
-    def add_database(self):
+    def get_database(self):
         with Transaction() as t:
             transactions_lst = t.get_all()
         self._lst_of_dict_add(transactions_lst)
@@ -127,11 +140,9 @@ def bulk_import():
                     if ".csv" in file:
                         new = Transactions()
                         new.add_csv(file,source["file_identifier"])
-                    elif ".xlsx" in file:
-                        new = Transactions()
-                        new.add_excel(file, source["file_identifier"])
+                    else: raise
                     existing = Transactions()
-                    existing.add_database()
+                    existing.get_database()
                     difference = new.compare(existing)
                     difference.add_to_database()
 

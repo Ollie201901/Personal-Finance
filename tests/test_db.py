@@ -1,5 +1,4 @@
 from db import Database
-import pytest
 
 
 def test_create():
