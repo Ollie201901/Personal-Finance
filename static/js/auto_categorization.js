@@ -1,4 +1,4 @@
-// Function to delete a transaction
+// Function to delete a AutoAssignments
 function deleteAutoAssign(autoID) {
   if (!confirm("Are you sure you want to delete this auto-assignment?")) return;
 

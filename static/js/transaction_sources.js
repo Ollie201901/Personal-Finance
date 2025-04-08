@@ -1,4 +1,4 @@
-// Function to delete a transaction
+// Function to delete a transaction Source files
 function deleteTransactionSource(transactionSourceId) {
   if (!confirm("Are you sure you want to delete this transaction source?")) return;
 
@@ -11,7 +11,7 @@ function deleteTransactionSource(transactionSourceId) {
   .then(response => response.json())
   .then(result => {
     if (result.success) {
-      // Optionally, remove the row from the table
+      // remove the row from the table
       document.querySelector(`tr[data-id='${transactionSourceId}']`).remove();
       alert("Transaction deleted.");
     } else {

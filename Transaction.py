@@ -24,7 +24,6 @@ class Transaction(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
     def get_all(self):
             try:
                 sql = """
@@ -38,7 +37,7 @@ class Transaction(Database):
                 for row in rows:
                     r = {}
                     r["id"] = row[0]
-                    r["date"] = row[1]
+                    r["date"] = datetime.strptime(row[1], '%Y-%m-%d %H:%M:%S').date()
                     r["description"] = row[2]
                     r["amount"] = row[3]
                     r["source"] = row[4]
@@ -69,4 +68,3 @@ class Transaction(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()

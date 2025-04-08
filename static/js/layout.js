@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const link = parent.querySelector('.nav-link');
     const submenu = parent.querySelector('.submenu');
 
-    // Debug: Log submenu initialization
+    // Log submenu initialization
     console.log('Initializing submenu for:', link.textContent);
 
     link.addEventListener('click', event => {

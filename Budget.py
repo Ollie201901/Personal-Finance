@@ -20,7 +20,6 @@ class Budget(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
     def get_all(self):
         try:
             sql = """
@@ -60,4 +59,3 @@ class Budget(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()

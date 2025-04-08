@@ -8,18 +8,24 @@ class AutoAssignment(Database):
     def __init__(self):
         super().__init__()
 
-    def add(self, description, min_amount, max_amount, transaction_source = None, category = None, vendor = None):
+    def add(self, description, min_amount = None, max_amount = None, transaction_source = None, category = None, vendor = None):
         try:
             sql = """
                 INSERT INTO auto_assignment (description, min_amount, max_amount, transaction_source_id, category_id, vendor_id)
                 VALUES(?, ?, ?, ?, ?, ?)
             """
-            with TransactionSource() as t:
-                transaction_source_id = t.get_id(transaction_source)
-            with Category() as c:
-                category_id = c.get_id(category)
-            with Vendor() as v:
-                vendor_id = v.get_id(vendor)
+            if transaction_source is not None:
+                with TransactionSource() as t:
+                    transaction_source_id = t.get_id(transaction_source)
+            else: transaction_source_id = None
+            if category is not None:
+                with Category() as c:
+                    category_id = c.get_id(category)
+            else: category_id = None
+            if vendor is not None:
+                with Vendor() as v:
+                    vendor_id = v.get_id(vendor)
+            else: vendor_id = None
             self.cursor.execute(sql, (description, min_amount, max_amount, transaction_source_id, category_id, vendor_id))
         except Exception as e:
             self.conn.rollback()
@@ -27,7 +33,6 @@ class AutoAssignment(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
     def get_all(self):
             try:
                 sql = """
@@ -46,7 +51,7 @@ class AutoAssignment(Database):
                     r["max_amount"] = row[3]
                     with TransactionSource() as t:
                         transaction_source = t.get_value_by_id(row[4])
-                    r["source"] = transaction_source
+                    r["source"] = transaction_source[2]
                     with Category() as c:
                         category, transaction_type = c.get_value_by_id(id=row[5])
                     r["category"] = category
@@ -74,4 +79,3 @@ class AutoAssignment(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()

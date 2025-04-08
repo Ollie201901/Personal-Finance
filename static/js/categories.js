@@ -1,4 +1,4 @@
-// Function to delete a transaction
+// Function to delete a Categories
 function deleteCategory(categoryID) {
   if (!confirm("Are you sure you want to delete this category?")) return;
 

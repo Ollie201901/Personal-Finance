@@ -2,9 +2,8 @@
 
 {% block body %}
   <h1>Transaction Source Files</h1>
-
+  <!-- Entries Table -->
 <div class="transaction-form">
-<!--    <h2>Add Transaction Source</h2>-->
     <form id="transactionSettingsForm" action = "{{ url_for('transaction_sources_add') }}" method="POST">
       <label for="folder_path">Folder Address:</label>
       <input type="text" id="folder_path" name="folder_path" placeholder="C:\" required>

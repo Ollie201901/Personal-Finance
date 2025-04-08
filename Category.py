@@ -19,7 +19,6 @@ class Category(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
 
     def delete(self, id):
         try:
@@ -35,7 +34,6 @@ class Category(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
 
     def get_all(self):
         try:
@@ -71,6 +69,7 @@ class Category(Database):
         except Exception as e:
             self.conn.close()
             raise e
+
     def get_value_by_id(self, id):
         try:
             sql = """

@@ -18,7 +18,6 @@ class TransactionSource(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
     def delete(self,id):
         try:
             sql = """
@@ -33,7 +32,6 @@ class TransactionSource(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
 
     def get_all(self):
         try:
@@ -73,8 +71,8 @@ class TransactionSource(Database):
     def get_value_by_id(self, id):
         try:
             sql = """
-                        SELECT vendor
-                        FROM vendors
+                        SELECT folder_path, file_identifier, account_alias
+                        FROM transaction_sources
                         WHERE delete_date is null and id = ?
                     """
             self.cursor.execute(sql, (id,))

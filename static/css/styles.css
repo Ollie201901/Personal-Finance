@@ -266,7 +266,7 @@ body {
   font-weight: bold;
 }
 
-/* Optional: Add a subtle box-shadow to the table */
+/*Add a subtle box-shadow to the table */
 #transactionsTable {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

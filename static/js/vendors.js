@@ -1,4 +1,4 @@
-// Function to delete a transaction
+// Function to delete a vendor
 function deleteVendor(vendorID) {
   if (!confirm("Are you sure you want to delete this vendor?")) return;
 

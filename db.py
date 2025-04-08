@@ -9,8 +9,8 @@ class Database:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.conn:
-            self.conn.close()
+        #if self.conn:
+        self.conn.close()
 
     def create(self):
         try:
@@ -55,8 +55,8 @@ class Database:
                     "description"	TEXT NOT NULL,
                     "amount"	REAL NOT NULL,
                     "source"	TEXT NOT NULL,
-                    "category_id"	INTEGER NOT NULL,
-                    "vendor_id" INTEGER NOT NULL,
+                    "category_id"	INTEGER,
+                    "vendor_id" INTEGER,
                     "create_date"	TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     "delete_date"	TEXT,
                     PRIMARY KEY("id" AUTOINCREMENT),

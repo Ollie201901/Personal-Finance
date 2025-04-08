@@ -5,10 +5,7 @@
 
   <!-- Add Entry Form -->
   <div class="entry-form">
-<!--    <h2>Add Entry</h2>-->
     <form id="entryForm" action = "{{ url_for('budget_add') }}" method="POST">
-<!--      <label for="entry-date">Date:</label>-->
-<!--      <input type="date" id="entry-date" required>-->
 
       <label for="entry-category">Category:</label>
       <select id="entry-category" name = "category" required>
@@ -35,11 +32,6 @@
       <button type="submit">Add Budget Item</button>
     </form>
   </div>
-
-  <!-- Current Balance -->
-<!--  <div class="balance">-->
-<!--    <h2>Current Balance: $<span id="currentBalance">0.00</span></h2>-->
-<!--  </div>-->
 
   <!-- Entries Table -->
   <div class="entries">

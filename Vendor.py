@@ -20,7 +20,6 @@ class Vendor(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
 
     def delete(self, id):
         try:
@@ -36,7 +35,6 @@ class Vendor(Database):
             raise e
         else:
             self.conn.commit()
-            self.conn.close()
 
     def get_all(self):
         try:

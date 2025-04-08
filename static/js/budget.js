@@ -1,4 +1,4 @@
-// Function to delete a transaction
+// Function to delete a Budget Items
 function deleteBudgetItem(budgetID) {
   if (!confirm("Are you sure you want to delete this budget item?")) return;
 

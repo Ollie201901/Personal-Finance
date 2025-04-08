@@ -10,7 +10,9 @@ from AutoAssignment import AutoAssignment
 import utils
 
 app = Flask(__name__)
-# Defining Routes
+
+
+# # ############################################# Defining Routes #############################################
 
 # ############################################# TRANSACTIONS #############################################
 @app.route("/", methods = ["GET", "POST"])
@@ -26,50 +28,6 @@ def transactions():
 def bulk_import():
     utils.bulk_import()
     return redirect("/transactions")
-    # Check if a file was uploaded; if not, assume JSON data was sent (CSV parsed client-side)
-    # if 'file' in request.files:
-    #     file = request.files['file']
-    #     if file.filename == '':
-    #         return jsonify({'success': False, 'error': 'No file selected.'}), 400
-    #
-    #     file_name = file.filename.lower()
-    #     try:
-    #         if file_name.endswith('.csv'):
-    #             # Process CSV file uploaded via FormData
-    #             new_transactions = utils.process_CSV(file,file_name)
-    #         elif file_name.endswith('.xlsx'):
-    #             # Process Excel file
-    #             new_transactions = utils.process_xls(file,file_name)
-    #         else:
-    #             return jsonify({'success': False, 'error': 'Unsupported file type.'}), 400
-    #     except Exception as e:
-    #         return jsonify({'success': False, 'error': str(e)}), 500
-    # else:
-    #     # No file uploaded
-    #     return jsonify({'success': False, 'error': 'No data provided.'}), 400
-    #
-    #
-    # try:
-    #     # Get database transactions
-    #     existing_transactions = utils.get_all_db_transactions()
-    #
-    #     # Compare New with Existing
-    #     result = utils.compare(new_transactions, existing_transactions)
-    #     # Submit New Transactions
-    #     return jsonify({'success': True, 'inserted': inserted_count})
-    # except Exception as e:
-    #     return jsonify({'success': False, 'error': str(e)}), 500
-
-# ############################################# SCHEDULED TRANSACTIONS #############################################
-@app.route("/scheduled_transactions", methods = ["GET", "POST"])
-def scheduled_transactions():
-    return render_template("scheduled_transactions.html",transaction_source = [])
-
-# ############################################# PREDICTED TRANSACTIONS #############################################
-
-@app.route("/predicted_transactions", methods = ["GET", "POST"])
-def predicted_transactions():
-    return render_template("predicted_transactions.html")
 
 # ############################################# TRANSACTION SOURCES #############################################
 
@@ -102,7 +60,7 @@ def delete_transaction_source(transaction_source_id):
 def categories_add():
     category = request.form.get("category")
     transaction_type = request.form.get("transaction_type")
-    with db.Category() as c:
+    with Category() as c:
         c.add(category_name=category, transaction_type=transaction_type)
     return redirect("/categories")
 
@@ -221,6 +179,9 @@ def delete_vendor(vendor_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     else: return jsonify({'success': True})
+
+
+# ############################################# START #############################################
 
 if __name__ == "__main__":
     Database().create()
