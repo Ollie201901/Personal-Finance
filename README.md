@@ -4,10 +4,10 @@ The purpose of this project is to create a personal expense budgeting app that c
 
 ## Table of Contents
 
-- Description
-- Installation
-- Usage
-- Contributions
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributions](#contributions)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
