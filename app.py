@@ -13,11 +13,12 @@ app = Flask(__name__)
 
 
 # # ############################################# Defining Routes #############################################
+# ############################################# INDEX #############################################
 
-# ############################################# TRANSACTIONS #############################################
 @app.route("/", methods = ["GET", "POST"])
 def index():
     return redirect("/transactions")
+# ############################################# TRANSACTIONS #############################################
 
 @app.route("/transactions", methods = ["GET", "POST"])
 def transactions():
@@ -185,4 +186,4 @@ def delete_vendor(vendor_id):
 
 if __name__ == "__main__":
     Database().create()
-    app.run(host = "127.0.0.1", port = 2000, debug = True)
+    app.run(host = "127.0.0.1", port = 2000, debug = False)
